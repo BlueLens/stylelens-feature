@@ -42,6 +42,18 @@ import stylelens_feature
 
 ## Getting Started
 
+### Prerequisite
+Download classification model
+```sh
+$ cd /path/to/yourpath
+$ wget https://s3.ap-northeast-2.amazonaws.com/bluelens-style-model/classification/inception_v3/classify_image_graph_def.pb
+```
+Define a environment variable
+```sh
+$ export CLASSIFY_GRAPH=/path/to/yourpath/classify_image_graph_def.pb
+```
+
+### Write your code 
 ```python
 from __future__ import print_function
 from stylelens_feature import feature_extract
