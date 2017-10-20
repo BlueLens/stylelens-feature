@@ -1,4 +1,3 @@
-
 from stylelens_feature import feature_extract
 
 file = '/Users/bok95/Desktop/img.jpg'

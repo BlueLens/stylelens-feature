@@ -31,7 +31,7 @@ import stylelens_feature
 Install via [Setuptools](http://pypi.python.org/pypi/setuptools).
 
 ```sh
-python setup.py install --user
+python setup.py install
 ```
 (or `sudo python setup.py install` to install the package for all users)
 
@@ -42,56 +42,17 @@ import stylelens_feature
 
 ## Getting Started
 
-Please follow the [installation procedure](#installation--usage) and then run the following:
-
 ```python
 from __future__ import print_function
-import time
-import stylelens_feature
-from stylelens_feature.rest import ApiException
-from pprint import pprint
-# create an instance of the API class
-api_instance = stylelens_feature.DetectApi()
-file = '/path/to/file.txt' # file | Image file to upload (only support jpg format yet) (optional)
+from stylelens_feature import feature_extract
 
-try:
-    # Query to detect obejects in the image you sent
-    api_response = api_instance.detect_objects(file=file)
-    pprint(api_response)
-except ApiException as e:
-    print("Exception when calling DetectApi->detect_objects: %s\n" % e)
+file = '/Users/bok95/Desktop/img.jpg'
 
+extractor = feature_extract.ExtractFeature()
+
+feature = extractor.extract_feature(file)
 ```
 
-## Documentation for API Endpoints
-
-All URIs are relative to *http://objdetect.stylelens.io*
-
-Class | Method | HTTP request | Description
------------- | ------------- | ------------- | -------------
-*DetectApi* | [**detect_objects**](docs/DetectApi.md#detect_objects) | **POST** / | Query to detect obejects in the image you sent
-
-
-## Documentation For Models
-
- - [BoxArray](docs/BoxArray.md)
- - [BoxObject](docs/BoxObject.md)
- - [BoxesArray](docs/BoxesArray.md)
- - [DetectObjectsResponse](docs/DetectObjectsResponse.md)
- - [DetectObjectsResponseData](docs/DetectObjectsResponseData.md)
-
-
-## Documentation For Authorization
-
-
-## api_key
-
-- **Type**: API key
-- **API key parameter name**: api_key
-- **Location**: HTTP header
-
-
 ## Author
-
-devops@bluehack.net
+master@bluehack.net
 
