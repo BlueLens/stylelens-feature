@@ -12,7 +12,9 @@
 from __future__ import absolute_import
 
 import os
+import time
 import grpc
+from PIL import Image
 import numpy as np
 import tensorflow as tf
 
@@ -21,6 +23,10 @@ from .grpc import feature_extract_pb2
 
 CHUNK_SIZE = 4 * 1024
 
+GPU_HOST = 'magi-0.stylelens.io'
+GPU_PORT = '50051'
+
+TMP_FILE = 'img.jpg'
 
 class ExtractFeature(object):
   def __init__(self, use_gpu=False):
@@ -43,19 +49,30 @@ class ExtractFeature(object):
 
   def extract_feature(self, file):
 
-    with tf.gfile.GFile(file, 'rb') as fid:
+    im = Image.open(file)
+    size = 300, 300
+    im.thumbnail(size, Image.ANTIALIAS)
+    im.save(TMP_FILE)
+    with tf.gfile.GFile(TMP_FILE, 'rb') as fid:
       image_data = fid.read()
 
     if self.use_gpu:
       print('use GPU')
-      channel = grpc.insecure_channel('localhost:50051')
+      start_time = time.time()
+      channel = grpc.insecure_channel(GPU_HOST + ':' + GPU_PORT)
       stub = feature_extract_pb2_grpc.ExtractStub(channel)
       response = stub.GetFeature(feature_extract_pb2.FeatureRequest(file_data=image_data))
       arr = np.fromstring(response.vector, dtype=np.float32)
+      elapsed_time = time.time() - start_time
+      print(elapsed_time)
+      print('done')
       return arr
 
     else:
       print('use CPU')
+      start_time = time.time()
       pool3_features = self.sess.run(self.pool3,{'DecodeJpeg/contents:0': image_data})
+      elapsed_time = time.time() - start_time
+      print(elapsed_time)
       feature = np.squeeze(pool3_features)
       return feature
