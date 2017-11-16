@@ -11,33 +11,51 @@
 
 from __future__ import absolute_import
 
-import numpy as np
 import os
+import grpc
+import numpy as np
 import tensorflow as tf
 
+from .grpc import feature_extract_pb2_grpc
+from .grpc import feature_extract_pb2
+
+CHUNK_SIZE = 4 * 1024
+
+
 class ExtractFeature(object):
-  def __init__(self):
-    try:
-      MODEL = os.environ['CLASSIFY_GRAPH']
-    except:
-      print("!!! Need to define environment variable: CLASSIFY_GRAPH=/path/to/model.pb")
+  def __init__(self, use_gpu=False):
+    self.use_gpu = use_gpu
 
+    if use_gpu == False:
+      try:
+        MODEL = os.environ['CLASSIFY_GRAPH']
+      except:
+        print("!!! Need to define environment variable: CLASSIFY_GRAPH=/path/to/model.pb")
 
-    print(MODEL)
-    with tf.gfile.FastGFile(MODEL, 'rb') as f:
-      graph_def = tf.GraphDef()
-      graph_def.ParseFromString(f.read())
-      _ = tf.import_graph_def(graph_def, name='')
+      print(MODEL)
+      with tf.gfile.FastGFile(MODEL, 'rb') as f:
+        graph_def = tf.GraphDef()
+        graph_def.ParseFromString(f.read())
+        _ = tf.import_graph_def(graph_def, name='')
 
-    with tf.Session() as self.sess:
-      self.pool3 = self.sess.graph.get_tensor_by_name('pool_3:0')
+      with tf.Session() as self.sess:
+        self.pool3 = self.sess.graph.get_tensor_by_name('pool_3:0')
 
   def extract_feature(self, file):
+
     with tf.gfile.GFile(file, 'rb') as fid:
       image_data = fid.read()
+
+    if self.use_gpu:
+      print('use GPU')
+      channel = grpc.insecure_channel('localhost:50051')
+      stub = feature_extract_pb2_grpc.ExtractStub(channel)
+      response = stub.GetFeature(feature_extract_pb2.FeatureRequest(file_data=image_data))
+      arr = np.fromstring(response.vector, dtype=np.float32)
+      return arr
+
+    else:
+      print('use CPU')
       pool3_features = self.sess.run(self.pool3,{'DecodeJpeg/contents:0': image_data})
       feature = np.squeeze(pool3_features)
-      print(feature)
       return feature
-
-
