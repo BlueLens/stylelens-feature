@@ -23,7 +23,7 @@ from .grpc import feature_extract_pb2
 
 CHUNK_SIZE = 4 * 1024
 
-GPU_HOST = 'magi-0.stylelens.io'
+GPU_HOST = os.environ['FEATURE_GRPC_HOST']
 GPU_PORT = os.environ['FEATURE_GRPC_PORT']
 
 TMP_FILE = 'img.jpg'
