@@ -14,7 +14,7 @@ import sys
 from setuptools import setup, find_packages
 
 NAME = "stylelens-feature"
-VERSION = "1.0.4"
+VERSION = "1.0.5"
 # To install the library, run the following
 #
 # python setup.py install
@@ -29,7 +29,7 @@ setup(
     name=NAME,
     version=VERSION,
     description="stylelens-feature",
-    author_email="devops@bluehack.net",
+    author_email="master@bluehack.net",
     url="",
     keywords=["Swagger", "stylelens-feature"],
     install_requires=REQUIRES,
